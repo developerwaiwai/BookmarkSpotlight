@@ -10,7 +10,7 @@
 
 NSString* const cBookmarkFileFormat = @"%@/Library/Application Support/Google/Chrome/Default/Bookmarks";
 NSString* const cDestinationFolderFormat = @"%@/Webloc/";
-NSString* const cDestinationFileFormat = @"%@/Webloc/%@.webloc";
+NSString* const cDestinationFileFormat = @"%@/Webloc/%@-%lu.webloc";
 NSString* const cTemplateFileFormat = @"%@/template.webloc";
 
 NSString* const cDictionaryRootKey = @"roots";
@@ -20,12 +20,18 @@ NSString* const cChildrenKey = @"children";
 NSString* const cURLKey = @"url";
 NSString* const cNameKey = @"name";
 
+unsigned long counter = 0;
+
 void convertBookmarkToWebloc(NSDictionary* dic);
 
 int main(int argc, const char * argv[])
 {
     
     @autoreleasepool {
+        
+        //first counter reset
+        //This counter is part of filename because bookmark name(filename) avoid duplication.
+        counter = 0;
         
         //Read Bookmark file(This file may be formated json. )
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -71,9 +77,13 @@ void convertBookmarkToWebloc(NSDictionary* dic) {
     
     //Write to file this item.
     if ([dic objectForKey:cURLKey] != nil && [dic objectForKey:cNameKey] != nil) {
+        
+        //counter increment
+        counter++;
+        
         //Create output file name(path).
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString* fileName =[NSString stringWithFormat:cDestinationFileFormat, [paths objectAtIndex:0], [dic objectForKey:cNameKey]];
+        NSString* fileName =[NSString stringWithFormat:cDestinationFileFormat, [paths objectAtIndex:0], [dic objectForKey:cNameKey],counter];
         
         //Webloc template file read.
         NSString* fileContentsTemplate = [NSString stringWithContentsOfFile:[NSString stringWithFormat:cTemplateFileFormat, [paths objectAtIndex:0]]];
