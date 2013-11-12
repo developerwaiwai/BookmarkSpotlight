@@ -83,7 +83,13 @@ void convertBookmarkToWebloc(NSDictionary* dic) {
         
         //Create output file name(path).
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString* fileName =[NSString stringWithFormat:cDestinationFileFormat, [paths objectAtIndex:0], [dic objectForKey:cNameKey],counter];
+        
+        //Illegal caracter replace.
+        //"/" to " "(space) and ":" to " "(space)
+        NSString* bookmarkName_replaced = [[dic objectForKey:cNameKey] stringByReplacingOccurrencesOfString:@"/" withString:@" "];
+        bookmarkName_replaced = [bookmarkName_replaced stringByReplacingOccurrencesOfString:@":" withString:@" "];
+        
+        NSString* fileName =[NSString stringWithFormat:cDestinationFileFormat, [paths objectAtIndex:0], bookmarkName_replaced, counter];
         
         //Webloc template file read.
         NSString* fileContentsTemplate = [NSString stringWithContentsOfFile:[NSString stringWithFormat:cTemplateFileFormat, [paths objectAtIndex:0]]];
